@@ -1,0 +1,34 @@
+menu "Bias Light: LED output"
+
+    config LED_GPIO
+        int "WS2812B data GPIO"
+        range 0 33
+        default 18
+        help
+            Output-capable GPIO connected to the strip's DIN (via a level shifter
+            and series resistor, see README). Avoid GPIO 6-11 (flash).
+
+    config LED_COUNT
+        int "Number of LEDs"
+        range 1 300
+        default 60
+
+    config MAX_BRIGHTNESS_PCT
+        int "Hard brightness cap (percent of full output)"
+        range 1 100
+        default 40
+        help
+            The API brightness range 0..100 is scaled onto 0..this value, so no
+            input can ever drive the strip above this cap.
+
+    config RENDER_FPS
+        int "Render loop frame rate"
+        range 10 120
+        default 60
+
+    config DEFAULT_BRIGHTNESS_PCT
+        int "Default brightness (0-100, within the cap range) when no state is saved"
+        range 0 100
+        default 50
+
+endmenu
