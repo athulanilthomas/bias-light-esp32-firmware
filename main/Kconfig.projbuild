@@ -1,0 +1,10 @@
+menu "Bias Light: Diagnostics"
+
+    config HEAP_LOG_INTERVAL_S
+        int "Free-heap log interval (seconds)"
+        range 5 3600
+        default 60
+        help
+            Periodically logs free and minimum-ever free heap for soak testing.
+
+endmenu
