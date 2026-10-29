@@ -6,6 +6,7 @@
 #include "http_api.h"
 #include "nvs_flash.h"
 #include "sdkconfig.h"
+#include "storage.h"
 #include "wifi_mgr.h"
 
 static const char *TAG = "main";
@@ -36,7 +37,12 @@ void app_main(void)
     nvs_init();
 
     light_state_t state = effects_default_state();
+    if (storage_load(&state) != ESP_OK) {
+        ESP_LOGI(TAG, "no saved state, using defaults");
+    }
     ESP_ERROR_CHECK(effects_init(&state));
+    ESP_ERROR_CHECK(storage_start());
+    effects_set_listener(storage_on_state_changed);
 
     if (wifi_mgr_start() == ESP_OK) {
         ESP_ERROR_CHECK(http_api_start());

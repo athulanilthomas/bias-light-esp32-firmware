@@ -1,0 +1,11 @@
+menu "Bias Light: Persistence"
+
+    config STORAGE_SAVE_DEBOUNCE_MS
+        int "Debounce before writing state to NVS (ms)"
+        range 1000 600000
+        default 5000
+        help
+            State changes are coalesced; flash is written at most once per
+            this interval to limit wear.
+
+endmenu
