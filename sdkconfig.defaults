@@ -1,0 +1,29 @@
+# Target
+CONFIG_IDF_TARGET="esp32"
+
+# Flash / partitions (two OTA slots)
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"
+CONFIG_PARTITION_TABLE_OFFSET=0x8000
+
+# 1 ms tick so the ~16 ms frame period is accurate
+CONFIG_FREERTOS_HZ=1000
+
+# Watchdogs: a hung task or crash reboots into the last saved state
+CONFIG_ESP_TASK_WDT_EN=y
+CONFIG_ESP_TASK_WDT_INIT=y
+CONFIG_ESP_TASK_WDT_PANIC=y
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=5
+CONFIG_ESP_INT_WDT=y
+CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT=y
+
+# Size optimisation (plenty of headroom, keeps OTA slots small)
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+
+# HTTP server (phones send fairly large headers)
+CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
+CONFIG_HTTPD_MAX_URI_LEN=256
+
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
