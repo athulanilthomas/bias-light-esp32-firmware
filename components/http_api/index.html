@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<title>TV Light</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:16px;font:16px system-ui,sans-serif;background:#111;color:#eee;max-width:480px;margin:auto}
+h1{font-size:20px;margin:4px 0 16px}
+.row{margin:18px 0}
+label{display:block;margin-bottom:8px;color:#aaa;font-size:14px}
+button{font:inherit;color:inherit;background:#262626;border:2px solid #333;border-radius:12px;padding:14px 8px;touch-action:manipulation}
+button.sel{border-color:#fb4;background:#332a10}
+#pwr{width:100%;font-size:18px}
+#pwr.on{background:#fb4;color:#111;border-color:#fb4}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input[type=color]{width:100%;height:64px;border:0;border-radius:12px;background:none;padding:0}
+input[type=range]{width:100%;height:36px}
+#st{color:#777;font-size:12px;min-height:16px}
+</style>
+</head>
+<body>
+<h1>TV Light</h1>
+<div class="row"><button id="pwr">Power</button></div>
+<div class="row"><label>Mode</label>
+<div class="modes" id="modes">
+<button data-m="solid">Solid</button>
+<button data-m="warm_white">Warm white</button>
+<button data-m="breathe">Breathe</button>
+<button data-m="rainbow">Rainbow</button>
+</div></div>
+<div class="row"><label>Color (solid / breathe)</label><input type="color" id="col" value="#ff9329"></div>
+<div class="row"><label>Brightness <span id="bv"></span></label><input type="range" id="br" min="0" max="100"></div>
+<div id="st"></div>
+<script>
+var $=function(i){return document.getElementById(i)},S={},pend={},timer=0,last=0;
+function hex(c){return"#"+c.map(function(v){return(v<16?"0":"")+v.toString(16)}).join("")}
+function show(s){S=s;
+$("pwr").className=s.on?"on":"";$("pwr").textContent=s.on?"On":"Off";
+[].forEach.call($("modes").children,function(b){b.className=b.dataset.m==s.mode?"sel":""});
+$("col").value=hex(s.color);$("br").value=s.brightness;$("bv").textContent=s.brightness+"%"}
+function msg(t){$("st").textContent=t}
+function send(){timer=0;last=Date.now();var b=JSON.stringify(pend);pend={};
+fetch("/api/state",{method:"POST",headers:{"Content-Type":"application/json"},body:b})
+.then(function(r){return r.ok?r.json():Promise.reject(r.status)}).then(function(s){show(s);msg("")})
+.catch(function(e){msg("Error: "+e)})}
+function set(p){for(var k in p){pend[k]=p[k]}
+var wait=Math.max(0,60-(Date.now()-last));if(!timer){timer=setTimeout(send,wait)}}
+function load(){fetch("/api/state").then(function(r){return r.json()}).then(show).catch(function(e){msg("Offline")})}
+$("pwr").onclick=function(){set({on:!S.on});S.on=!S.on;show(S)};
+$("modes").onclick=function(e){var m=e.target.dataset.m;if(m){set({mode:m,on:true})}};
+$("col").oninput=function(){var v=parseInt(this.value.slice(1),16);set({color:[v>>16&255,v>>8&255,v&255],mode:S.mode=="breathe"?"breathe":"solid",on:true})};
+$("br").oninput=function(){$("bv").textContent=this.value+"%";set({brightness:+this.value})};
+document.addEventListener("visibilitychange",function(){if(!document.hidden)load()});
+load();
+</script>
+</body>
+</html>
