@@ -1,0 +1,23 @@
+menu "Bias Light: Network"
+
+    config WIFI_SSID
+        string "Wi-Fi SSID"
+        default ""
+        help
+            Network to join in station mode. Leave empty to skip Wi-Fi (the
+            strip still runs with its saved/default state).
+
+    config WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+
+    config MDNS_HOSTNAME
+        string "mDNS hostname (without .local)"
+        default "tvlight"
+
+    config WIFI_RETRY_MAX_DELAY_MS
+        int "Maximum reconnect back-off (ms)"
+        range 1000 60000
+        default 15000
+
+endmenu
