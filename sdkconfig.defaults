@@ -26,4 +26,14 @@ CONFIG_COMPILER_OPTIMIZATION_SIZE=y
 CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
 CONFIG_HTTPD_MAX_URI_LEN=256
 
+# HomeKit: the web server and HAP server share the socket pool, and HAP needs address reuse
+CONFIG_LWIP_MAX_SOCKETS=16
+CONFIG_LWIP_SO_REUSE=y
+CONFIG_MBEDTLS_HARDWARE_MPI=y
+CONFIG_LWIP_UDP_RECVMBOX_SIZE=10
+
+# Pairing runs a CPU-heavy SRP exchange that can starve the core-0 idle task for a few seconds.
+# The render task stays under the watchdog; only the idle-task check on core 0 is relaxed.
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=n
+
 CONFIG_LOG_DEFAULT_LEVEL_INFO=y
