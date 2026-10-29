@@ -9,6 +9,8 @@
 extern "C" {
 #endif
 
+#define EFFECTS_MAX_LISTENERS 4
+
 typedef enum {
     EFFECT_SOLID = 0,
     EFFECT_WARM_WHITE,
@@ -51,8 +53,8 @@ void effects_get_state(light_state_t *out);
 /** Atomically apply a patch (values are clamped), then notify the listener. */
 void effects_apply_patch(const light_patch_t *patch);
 
-/** Register a single change listener (e.g. persistence). Pass NULL to remove. */
-void effects_set_listener(effects_listener_t cb);
+/** Register a change listener (e.g. persistence, HomeKit). At most EFFECTS_MAX_LISTENERS; call before concurrent use. */
+esp_err_t effects_add_listener(effects_listener_t cb);
 
 const char *effects_mode_name(effect_mode_t mode);
 

@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "homekit.h"
 #include "http_api.h"
 #include "nvs_flash.h"
 #include "sdkconfig.h"
@@ -42,9 +43,15 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(effects_init(&state));
     ESP_ERROR_CHECK(storage_start());
-    effects_set_listener(storage_on_state_changed);
+    ESP_ERROR_CHECK(effects_add_listener(storage_on_state_changed));
 
     if (wifi_mgr_start() == ESP_OK) {
+#if CONFIG_HOMEKIT_ENABLE
+        esp_err_t hk = homekit_start();
+        if (hk != ESP_OK) {
+            ESP_LOGE(TAG, "HomeKit not available: %s", esp_err_to_name(hk));
+        }
+#endif
         ESP_ERROR_CHECK(http_api_start());
     }
 

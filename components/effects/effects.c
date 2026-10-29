@@ -36,7 +36,8 @@ static const char *const MODE_NAMES[EFFECT_COUNT] = {
 static led_strip_handle_t s_strip;
 static portMUX_TYPE s_lock = portMUX_INITIALIZER_UNLOCKED;
 static light_state_t s_state;
-static effects_listener_t s_listener;
+static effects_listener_t s_listeners[EFFECTS_MAX_LISTENERS];
+static size_t s_num_listeners;
 
 static uint8_t s_gamma[256];
 /* 0..256 intensity curve for breathe, one full period over 256 entries. */
@@ -97,9 +98,13 @@ void effects_get_state(light_state_t *out)
     taskEXIT_CRITICAL(&s_lock);
 }
 
-void effects_set_listener(effects_listener_t cb)
+esp_err_t effects_add_listener(effects_listener_t cb)
 {
-    s_listener = cb;
+    if (!cb || s_num_listeners >= EFFECTS_MAX_LISTENERS) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    s_listeners[s_num_listeners++] = cb;
+    return ESP_OK;
 }
 
 void effects_apply_patch(const light_patch_t *p)
@@ -127,9 +132,8 @@ void effects_apply_patch(const light_patch_t *p)
     ESP_LOGI(TAG, "state: on=%d mode=%s color=(%u,%u,%u) brightness=%u", snapshot.on,
              effects_mode_name(snapshot.mode), snapshot.r, snapshot.g, snapshot.b, snapshot.brightness);
 
-    effects_listener_t cb = s_listener;
-    if (cb) {
-        cb(&snapshot);
+    for (size_t i = 0; i < s_num_listeners; i++) {
+        s_listeners[i](&snapshot);
     }
 }
 

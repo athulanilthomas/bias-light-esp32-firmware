@@ -167,7 +167,7 @@ esp_err_t http_api_start(void)
 {
     httpd_config_t cfg = HTTPD_DEFAULT_CONFIG();
     cfg.stack_size = 6144;
-    cfg.max_open_sockets = 6;
+    cfg.max_open_sockets = 5;
     cfg.lru_purge_enable = true;
 
     httpd_handle_t server = NULL;

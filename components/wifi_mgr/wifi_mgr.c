@@ -55,19 +55,24 @@ static void on_ip_event(void *arg, esp_event_base_t base, int32_t id, void *data
     s_retry_ms = RETRY_MIN_MS;
 }
 
+esp_err_t wifi_mgr_mdns_start(void)
+{
+    esp_err_t err = mdns_init();
+    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
+        return err;
+    }
+    mdns_hostname_set(CONFIG_MDNS_HOSTNAME);
+    mdns_instance_name_set("TV Bias Light");
+    return mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
+}
+
 static esp_err_t start_mdns(esp_netif_t *sta)
 {
     esp_err_t err = esp_netif_set_hostname(sta, CONFIG_MDNS_HOSTNAME);
     if (err != ESP_OK) {
         return err;
     }
-    err = mdns_init();
-    if (err != ESP_OK) {
-        return err;
-    }
-    mdns_hostname_set(CONFIG_MDNS_HOSTNAME);
-    mdns_instance_name_set("TV Bias Light");
-    return mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
+    return wifi_mgr_mdns_start();
 }
 
 esp_err_t wifi_mgr_start(void)

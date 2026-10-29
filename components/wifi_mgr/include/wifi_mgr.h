@@ -13,6 +13,12 @@ extern "C" {
  */
 esp_err_t wifi_mgr_start(void);
 
+/**
+ * (Re)apply the mDNS hostname and the _http._tcp service. Initialises mDNS if
+ * needed. Used after another component (HomeKit) has re-initialised mDNS.
+ */
+esp_err_t wifi_mgr_mdns_start(void);
+
 #ifdef __cplusplus
 }
 #endif

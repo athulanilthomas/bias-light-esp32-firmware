@@ -1,0 +1,24 @@
+menu "Bias Light: HomeKit"
+
+    config HOMEKIT_ENABLE
+        bool "Enable Apple HomeKit accessory"
+        default y
+
+    config HOMEKIT_SETUP_CODE
+        string "HomeKit setup (pairing) code, format xxx-xx-xxx"
+        default ""
+        depends on HOMEKIT_ENABLE
+        help
+            Leave empty (recommended) to generate a random code on first boot.
+            It is stored in NVS and printed on the serial console at every boot.
+            If you set one, it must not be a trivial or well-known code
+            (e.g. 111-22-333, 123-45-678); invalid codes disable HomeKit.
+            Note that a code set here is visible in your local sdkconfig and
+            in the firmware image.
+
+    config HOMEKIT_ACCESSORY_NAME
+        string "Accessory name shown in the Home app"
+        default "TV Light"
+        depends on HOMEKIT_ENABLE
+
+endmenu
