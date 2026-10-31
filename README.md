@@ -28,10 +28,13 @@ Wi-Fi credentials live only in your local, git-ignored `sdkconfig`. Leave the SS
 
 ## Hardware and wiring
 
+![TV Bias Light circuit diagram](docs/circuit-diagram.svg)
+
 - ESP32-WROOM-32 dev board, WS2812B 5 V strip (about 60-90 LEDs).
 - Data: `GPIO18` (`CONFIG_LED_GPIO`) to the strip's DIN.
 - Power the strip from its own 5 V supply. **Connect that supply's GND to the ESP32 GND.**
-- The ESP32 outputs 3.3 V; WS2812B expects ~0.7 x Vdd = 3.5 V. It often works directly, but a 74AHCT125/74HCT245 level shifter is more reliable.
+- The ESP32 can run from USB or from the same 5 V rail via its VIN pin (dashed in the diagram), never both at once.
+- The ESP32 outputs 3.3 V; WS2812B expects ~0.7 x Vdd = 3.5 V. It often works directly, but a 74AHCT125/74HCT245 level shifter (powered from 5 V, with a 100 nF capacitor across its supply pins) is more reliable.
 - Add a ~330 ohm resistor in series with the data line close to the first LED, and a 1000 uF capacitor across the strip's 5 V/GND at the supply.
 - Power budget: a WS2812B draws up to ~60 mA at full white, i.e. 3.6 A for 60 LEDs. With the default 40% cap the strip stays under about 1.5 A, so a 5 V / 3 A supply is plenty.
 - For more than ~60 LEDs, inject 5 V at both ends of the strip.
@@ -113,6 +116,7 @@ main/                 app_main, heap monitor
 components/homekit/   HomeKit Lightbulb, setup code handling
 third_party/esp-homekit-sdk/  Espressif HomeKit SDK (submodule)
 test_host/            host-side unit tests
+docs/                 circuit diagram (SVG)
 components/effects/   strip output, effects, gamma, state, render task
 components/wifi_mgr/  Wi-Fi station + mDNS
 components/http_api/  REST API + embedded index.html

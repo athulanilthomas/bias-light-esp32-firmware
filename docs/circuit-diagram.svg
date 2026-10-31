@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 910" width="1320" height="910" role="img" aria-labelledby="svg-title svg-desc" font-family="Helvetica, Arial, sans-serif">
+  <title id="svg-title">TV Bias Light circuit diagram</title>
+  <desc id="svg-desc">A 5 V supply powers a WS2812B LED strip and a 74AHCT125 level shifter. ESP32 GPIO18 feeds the level shifter, which drives the strip's DIN through a 330 ohm resistor. A 1000 uF capacitor sits across the supply, a 100 nF capacitor sits across the level shifter, and all grounds are common. The ESP32 can optionally be powered from the 5 V rail through VIN instead of USB.</desc>
+
+  <style>
+    text { fill: #263238; font-size: 15px; }
+    #parts text, #notes text { font-size: 16px; }
+    .title { font-size: 30px; font-weight: 700; }
+    .sub { font-size: 16px; fill: #546e7a; }
+    .h { font-size: 18px; font-weight: 700; }
+    .b { font-weight: 700; }
+    .f16 { font-size: 16px; }
+    .s { font-size: 13.5px; }
+    .m { text-anchor: middle; }
+    .e { text-anchor: end; }
+    .pin { font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace; font-size: 14px; }
+    .gray { fill: #546e7a; }
+    .red { fill: #c62828; }
+    .org { fill: #e65100; }
+    .blu { fill: #1565c0; }
+
+    .w { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .pwr { stroke: #d62728; stroke-width: 4; }
+    .gnd { stroke: #212121; stroke-width: 4; }
+    .d33 { stroke: #f57c00; stroke-width: 3; }
+    .d5 { stroke: #1565c0; stroke-width: 3; }
+    .alt { stroke: #546e7a; stroke-width: 3; }
+    .dash { stroke-dasharray: 9 6; }
+    .halo { fill: none; stroke: #fff; stroke-width: 9; }
+
+    .blk { fill: #f5f7fa; stroke: #455a64; stroke-width: 2; }
+    .sym { fill: none; stroke: #263238; stroke-width: 2.5; stroke-linecap: round; }
+    .res { fill: #fff; stroke: #263238; stroke-width: 2.5; }
+    .jr { fill: #d62728; }
+    .jk { fill: #212121; }
+    .rule { stroke: #cfd8dc; stroke-width: 1.5; }
+  </style>
+
+  <rect width="1320" height="910" fill="#fff"/>
+
+  <!-- Header and legend -->
+  <text class="title" x="40" y="50">TV Bias Light: circuit diagram</text>
+  <text class="sub" x="40" y="77">ESP32 GPIO18 → 74AHCT125 level shifter → 330 Ω → WS2812B strip, with one common GND</text>
+
+  <path class="w pwr" d="M40,108 H76"/>
+  <text x="84" y="113">+5 V</text>
+  <path class="w gnd" d="M150,108 H186"/>
+  <text x="194" y="113">GND</text>
+  <path class="w d33" d="M260,108 H296"/>
+  <text x="304" y="113">3.3 V logic</text>
+  <path class="w d5" d="M410,108 H446"/>
+  <text x="454" y="113">5 V logic (level-shifted)</text>
+  <path class="w alt dash" d="M670,108 H706"/>
+  <text x="714" y="113">dashed = optional / alternative</text>
+
+  <!-- Power rails -->
+  <path class="w pwr" d="M150,360 H178 V170 H1255"/>
+  <path class="w gnd" d="M150,430 H178 V620 H1255"/>
+  <text class="b red f16" x="192" y="158">+5 V</text>
+  <text class="b f16" x="192" y="646">GND (common)</text>
+
+  <!-- PS1: 5 V supply -->
+  <g id="ps1">
+    <rect class="blk" x="30" y="325" width="120" height="140" rx="8"/>
+    <text class="b m" x="84" y="361">PS1</text>
+    <text class="m" x="84" y="383">5 V DC</text>
+    <text class="m" x="84" y="402">supply</text>
+    <text class="m gray" x="84" y="428">≥ 3 A</text>
+    <text class="b e red f16" x="141" y="366">+</text>
+    <text class="b e f16" x="141" y="436">−</text>
+    <circle cx="150" cy="360" r="5" fill="#fff" stroke="#d62728" stroke-width="3"/>
+    <circle cx="150" cy="430" r="5" fill="#fff" stroke="#212121" stroke-width="3"/>
+  </g>
+
+  <!-- C1: bulk capacitor across the supply -->
+  <g id="c1">
+    <path class="w pwr" d="M250,170 V382"/>
+    <path class="w gnd" d="M250,407 V620"/>
+    <path class="sym" d="M231,382 H269"/>
+    <path class="sym" d="M231,400 Q250,414 269,400"/>
+    <text class="b e red f16" x="224" y="381">+</text>
+    <text class="b" x="282" y="387">C1</text>
+    <text x="282" y="406">1000 µF</text>
+    <text class="gray" x="282" y="425">≥ 10 V</text>
+    <circle class="jr" cx="250" cy="170" r="5"/>
+    <circle class="jk" cx="250" cy="620" r="5"/>
+  </g>
+
+  <!-- A1: ESP32 dev board -->
+  <g id="a1">
+    <path class="w pwr dash" d="M455,170 V325"/>
+    <path class="w gnd" d="M455,465 V620"/>
+    <rect class="blk" x="365" y="325" width="180" height="140" rx="8"/>
+    <text class="b m" x="455" y="361">A1</text>
+    <text class="b f16 m" x="455" y="384">ESP32-WROOM-32</text>
+    <text class="m" x="455" y="403">dev board</text>
+    <text class="m gray s" x="455" y="446">USB: flash + serial log</text>
+    <text class="pin" x="463" y="316">5V / VIN</text>
+    <text class="pin" x="463" y="492">GND</text>
+    <text class="pin org" x="556" y="386">GPIO18</text>
+    <text class="org s" x="556" y="418">3.3 V</text>
+    <text class="red s" x="468" y="213">Standalone power:</text>
+    <text class="red s" x="468" y="231">5 V → VIN, no USB</text>
+    <circle class="jr" cx="455" cy="170" r="5"/>
+    <circle class="jk" cx="455" cy="620" r="5"/>
+  </g>
+
+  <!-- C2: decoupling for U1 -->
+  <g id="c2">
+    <path class="w pwr" d="M630,170 V237"/>
+    <path class="w gnd" d="M630,253 V620"/>
+    <path class="sym" d="M612,237 H648"/>
+    <path class="sym" d="M612,253 H648"/>
+    <text class="b" x="660" y="241">C2</text>
+    <text x="660" y="260">100 nF</text>
+    <text class="gray" x="660" y="279">next to U1</text>
+    <circle class="jr" cx="630" cy="170" r="5"/>
+    <circle class="jk" cx="630" cy="620" r="5"/>
+  </g>
+
+  <!-- GPIO18 to U1 pin 2 (hops over the C2 lead) -->
+  <path class="halo" d="M620,395 a10,10 0 0 1 20,0"/>
+  <path class="w d33" d="M545,395 H620 a10,10 0 0 1 20,0 H702"/>
+  <path d="M715,395 l-13,-6 v12 z" fill="#f57c00"/>
+
+  <!-- U1: 74AHCT125 level shifter (gate 1 of 4) -->
+  <g id="u1">
+    <path class="w pwr" d="M780,170 V325"/>
+    <path class="w gnd" d="M750,465 V620"/>
+    <path class="w gnd" d="M810,465 V620"/>
+    <rect class="blk" x="715" y="325" width="130" height="140" rx="8"/>
+    <text class="b m" x="780" y="361">U1</text>
+    <text class="b f16 m" x="780" y="384">74AHCT125</text>
+    <text class="m" x="780" y="403">level shifter</text>
+    <text class="m gray s" x="780" y="446">3.3 V → 5 V</text>
+    <text class="pin" x="788" y="316">14 VCC</text>
+    <text class="pin" x="650" y="386">2 (1A)</text>
+    <text class="pin" x="853" y="386">3 (1Y)</text>
+    <text class="pin" x="758" y="492">1 /OE</text>
+    <text class="pin" x="818" y="492">7 GND</text>
+    <circle class="jr" cx="780" cy="170" r="5"/>
+    <circle class="jk" cx="750" cy="620" r="5"/>
+    <circle class="jk" cx="810" cy="620" r="5"/>
+  </g>
+
+  <!-- R1: series resistor on the data line -->
+  <g id="r1">
+    <path class="w d5" d="M845,395 H915"/>
+    <rect class="res" x="915" y="382" width="60" height="26"/>
+    <path class="w d5" d="M975,395 H1028"/>
+    <path d="M1040,395 l-13,-6 v12 z" fill="#1565c0"/>
+    <text class="b m" x="945" y="370">R1</text>
+    <text class="m" x="945" y="430">330 Ω</text>
+    <text class="m gray s" x="945" y="448">near first LED</text>
+    <text class="blu s" x="860" y="418">5 V</text>
+  </g>
+
+  <!-- LED1: WS2812B strip -->
+  <g id="led1">
+    <path class="w pwr" d="M1040,355 H1015 V170"/>
+    <path class="w gnd" d="M1040,435 H1015 V620"/>
+    <path class="w pwr dash" d="M1230,355 H1255 V170"/>
+    <path class="w gnd dash" d="M1230,435 H1255 V620"/>
+    <path class="w alt" d="M1230,395 H1242 M1242,389 L1254,401 M1254,389 L1242,401"/>
+    <rect class="blk" x="1040" y="325" width="190" height="140" rx="8"/>
+    <text class="pin" x="1048" y="360">+5V</text>
+    <text class="pin" x="1048" y="400">DIN</text>
+    <text class="pin" x="1048" y="440">GND</text>
+    <text class="pin e" x="1222" y="360">+5V</text>
+    <text class="pin e" x="1222" y="400">DOUT</text>
+    <text class="pin e" x="1222" y="440">GND</text>
+    <text class="b m" x="1135" y="372">LED1</text>
+    <text class="b f16 m" x="1135" y="394">WS2812B</text>
+    <text class="m" x="1135" y="414">5 V strip</text>
+    <text class="m gray s" x="1135" y="434">60 LEDs</text>
+    <text class="pin gray" x="1262" y="400">NC</text>
+    <text class="gray s e" x="1245" y="224">Far-end feed (optional):</text>
+    <text class="gray s e" x="1245" y="242">5 V + GND for &gt; ~60 LEDs</text>
+    <circle class="jr" cx="1015" cy="170" r="5"/>
+    <circle class="jk" cx="1015" cy="620" r="5"/>
+    <circle class="jr" cx="1255" cy="170" r="5"/>
+    <circle class="jk" cx="1255" cy="620" r="5"/>
+  </g>
+
+  <!-- Parts list and build notes -->
+  <path class="rule" d="M40,668 H1280"/>
+
+  <text class="h" x="40" y="700">Parts</text>
+  <g id="parts">
+    <text class="b" x="40" y="730">A1</text>
+    <text x="104" y="730">ESP32-WROOM-32 dev board, data on GPIO18 (CONFIG_LED_GPIO)</text>
+    <text class="b" x="40" y="754">U1</text>
+    <text x="104" y="754">74AHCT125 level shifter, 3.3 V → 5 V (74HCT245 also works)</text>
+    <text class="b" x="40" y="778">R1</text>
+    <text x="104" y="778">330 Ω, 1/4 W, in series with the data line</text>
+    <text class="b" x="40" y="802">C1</text>
+    <text x="104" y="802">1000 µF electrolytic, ≥ 10 V, across the supply's 5 V and GND</text>
+    <text class="b" x="40" y="826">C2</text>
+    <text x="104" y="826">100 nF ceramic, decoupling for U1</text>
+    <text class="b" x="40" y="850">PS1</text>
+    <text x="104" y="850">5 V DC supply, ≥ 3 A</text>
+    <text class="b" x="40" y="874">LED1</text>
+    <text x="104" y="874">WS2812B 5 V strip, 60 LEDs (CONFIG_LED_COUNT)</text>
+  </g>
+
+  <text class="h" x="680" y="700">Build notes</text>
+  <g id="notes">
+    <text x="680" y="730">• Common ground: PS1, ESP32, U1 and the strip all share one GND.</text>
+    <text x="680" y="754">• Power the ESP32 from USB or from VIN (dashed), never both at once.</text>
+    <text x="680" y="778">• Keep R1 next to the first LED and C2 right at U1 pins 14 and 7.</text>
+    <text x="680" y="802">• Unused U1 gates: tie inputs (pins 5, 9, 12) and /OE (4, 10, 13) to GND.</text>
+    <text x="680" y="826">• Without U1: GPIO18 → R1 → DIN works on many strips, with less margin.</text>
+    <text x="680" y="850">• 60 LEDs × 60 mA = 3.6 A at full white; the 40 % cap keeps it under ~1.5 A.</text>
+    <text x="680" y="874">• For more than ~60 LEDs, also feed 5 V and GND at the far end (dashed).</text>
+  </g>
+</svg>
