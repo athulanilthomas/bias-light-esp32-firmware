@@ -84,6 +84,7 @@ curl -X POST http://tvlight.local/api/state -d '{"mode":"solid","color":[0,80,25
 - To un-pair everything and get a new code: `idf.py erase-flash flash`.
 - Remote Siri/Home access away from home needs a Home hub (HomePod / Apple TV).
 - `mDNS`: the SDK takes over mDNS initialisation, so `homekit_start()` re-applies the `tvlight.local` hostname and `_http._tcp` service afterwards (`wifi_mgr_mdns_start()`).
+- **HAP HTTP server port**: `CONFIG_HAP_HTTP_SERVER_PORT` (menuconfig > Component config > HAP HTTP Server > Server Port) defaults to `80`, which conflicts with the firmware web server. Set it to `8080` (or another unused port) to keep `http://tvlight.local/` available.
 - Watchdog: HomeKit pairing does a CPU-heavy SRP exchange, so the idle-task check on core 0 is disabled in `sdkconfig.defaults`. The render task stays subscribed to the task watchdog.
 
 Host-side unit tests for the pure helpers (code validation/generation, HSV conversion):
