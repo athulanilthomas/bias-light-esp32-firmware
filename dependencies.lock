@@ -1,6 +1,6 @@
 dependencies:
   espressif/jsmn:
-    component_hash: d80350c41bbaa827c98a25b6072df00884e72f54885996fab4a4f0aebce6b6c3
+    component_hash: 9b2f6ba1e0fdac1a25e8f1b5a03bfbc8069b43980c62bba225d521ee6cefc6d0
     dependencies:
     - name: idf
       require: private
@@ -8,27 +8,27 @@ dependencies:
     source:
       registry_url: https://components.espressif.com
       type: service
-    version: 1.1.0
+    version: 1.2.0
   espressif/json_generator:
-    component_hash: 45033e1c199b13f1c8c1b544fb7d4e2df6a8e3071ebdcb1b22582b61a7974ff2
+    component_hash: 7433f3e206d8ed81dc8335b77710a5186f36c9e8c8b5375b277d6f2b9b430496
     dependencies: []
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.1.2
+    version: 2.1.0
   espressif/json_parser:
-    component_hash: d74b81729ad06ec11ff5eb5b1b0d7df1d00e6027fc11471f4b139c70dcf1b1e4
+    component_hash: 7a764bd9a057cacc93ccabefeca4cdc6ae558790582af9a639acdd015d5103ae
     dependencies:
     - name: espressif/jsmn
       registry_url: https://components.espressif.com
       require: private
       rules:
       - if: idf_version >=5.0
-      version: ~1.1
+      version: ~1.2
     source:
       registry_url: https://components.espressif.com/
       type: service
-    version: 1.0.3
+    version: 2.0.0
   espressif/led_strip:
     component_hash: 027f68f2b57b0dca1d68dff6cc1139d9093825aa808c2bc3ca42bb2ce530fce9
     dependencies:
@@ -69,6 +69,6 @@ direct_dependencies:
 - espressif/led_strip
 - espressif/libsodium
 - espressif/mdns
-manifest_hash: 08e639872c84dcddea6b79a687b81b9a7b17e001b0594377b1e4155919ee1713
+manifest_hash: 6e03ccff8a199785e92fe1bfdfc1589b8a96b6958884711495d4fc99afba5370
 target: esp32
 version: 2.0.0

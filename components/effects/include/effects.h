@@ -16,8 +16,13 @@ typedef enum {
     EFFECT_WARM_WHITE,
     EFFECT_BREATHE,
     EFFECT_RAINBOW,
+    EFFECT_BREATHING_PALETTE,
     EFFECT_COUNT,
 } effect_mode_t;
+
+typedef struct {
+    uint8_t r, g, b;
+} rgb_color_t;
 
 /** Complete user-visible light state. brightness is 0..100 and is scaled onto 0..CONFIG_MAX_BRIGHTNESS_PCT. */
 typedef struct {
