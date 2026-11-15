@@ -1,7 +1,7 @@
 idf_component_register(
     SRCS "http_api.c"
     INCLUDE_DIRS "include"
-    EMBED_TXTFILES "index.html"
+    EMBED_FILES "index.html.gz"
     REQUIRES effects
     PRIV_REQUIRES esp_http_server json log
 )

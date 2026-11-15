@@ -13,8 +13,8 @@ static const char *TAG = "http_api";
 
 #define MAX_BODY_LEN 256
 
-extern const char index_html_start[] asm("_binary_index_html_start");
-extern const char index_html_end[] asm("_binary_index_html_end");
+extern const char index_html_gz_start[] asm("_binary_index_html_gz_start");
+extern const char index_html_gz_end[] asm("_binary_index_html__gz_end");
 
 static esp_err_t send_json(httpd_req_t *req, const char *status, const char *body)
 {
@@ -110,8 +110,10 @@ static const char *parse_patch(const cJSON *root, light_patch_t *p)
 
 static esp_err_t index_get(httpd_req_t *req)
 {
+    const size_t len = index_html_gz_end - index_html_gz_start;
     httpd_resp_set_type(req, "text/html");
-    return httpd_resp_send(req, index_html_start, index_html_end - index_html_start - 1);
+    httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
+    return httpd_resp_send(req, (const char*)index_html_gz_start, len);
 }
 
 static esp_err_t favicon_get(httpd_req_t *req)
