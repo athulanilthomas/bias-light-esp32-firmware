@@ -14,7 +14,7 @@ static const char *TAG = "http_api";
 #define MAX_BODY_LEN 256
 
 extern const char index_html_gz_start[] asm("_binary_index_html_gz_start");
-extern const char index_html_gz_end[] asm("_binary_index_html__gz_end");
+extern const char index_html_gz_end[] asm("_binary_index_html_gz_end");
 
 static esp_err_t send_json(httpd_req_t *req, const char *status, const char *body)
 {
