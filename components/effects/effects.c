@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "esp_check.h"
+#include "esp_random.h"
 #include "esp_log.h"
 #include "esp_task_wdt.h"
 #include "esp_timer.h"
@@ -26,10 +27,16 @@ static const char *TAG = "effects";
 #define WARM_G 147
 #define WARM_B 41
 
+/** Breathing palette config */
+#define HUE_BITS 16
+#define NUM_RANDOM_COLORS 4
+#define HUE_STEP ((1U << HUE_BITS) / NUM_RANDOM_COLORS)
+
 static const char *const MODE_NAMES[EFFECT_COUNT] = {
     [EFFECT_SOLID] = "solid",
     [EFFECT_WARM_WHITE] = "warm_white",
     [EFFECT_BREATHE] = "breathe",
+    [EFFECT_BREATHING_PALETTE] = "breathing_palette",
     [EFFECT_RAINBOW] = "rainbow",
 };
 
@@ -42,6 +49,7 @@ static size_t s_num_listeners;
 static uint8_t s_gamma[256];
 /* 0..256 intensity curve for breathe, one full period over 256 entries. */
 static uint16_t s_breathe[256];
+static rgb_color_t s_colors[NUM_RANDOM_COLORS];
 
 static uint8_t s_frame[NUM_LEDS * 3];
 static uint8_t s_prev[NUM_LEDS * 3];
@@ -137,17 +145,6 @@ void effects_apply_patch(const light_patch_t *p)
     }
 }
 
-/* ---------- fixed-point colour math ---------- */
-
-static void build_tables(void)
-{
-    for (int i = 0; i < 256; i++) {
-        s_gamma[i] = (uint8_t)lroundf(255.0f * powf(i / 255.0f, 2.2f));
-        float c = 0.5f * (1.0f - cosf(2.0f * (float)M_PI * i / 256.0f));
-        s_breathe[i] = (uint16_t)lroundf(256.0f * (0.04f + 0.96f * c));
-    }
-}
-
 /* hue is a 16-bit angle (0..65535 = 0..360 deg); full saturation and value. */
 static void hue_to_rgb(uint16_t hue, uint8_t *r, uint8_t *g, uint8_t *b)
 {
@@ -172,6 +169,24 @@ static inline uint8_t shade(uint8_t c, uint32_t intensity)
     return (uint8_t)((s_gamma[c] * intensity) >> 8);
 }
 
+/* ---------- fixed-point colour math ---------- */
+static void build_tables(void)
+{
+    // build gamma and breathe table
+    for (int i = 0; i < 256; i++) {
+        s_gamma[i] = (uint8_t)lroundf(255.0f * powf(i / 255.0f, 2.2f));
+        float c = 0.5f * (1.0f - cosf(2.0f * (float)M_PI * i / 256.0f));
+        s_breathe[i] = (uint16_t)lroundf(256.0f * (0.04f + 0.96f * c));
+    }
+    // build random color table for breathing palette
+    const uint16_t hue_start = esp_random() & 0xFFFF;
+
+    for (int i = 0; i < NUM_RANDOM_COLORS; i++) {
+        uint16_t hue = hue_start + (i * HUE_STEP);
+        hue_to_rgb(hue, &s_colors[i].r, &s_colors[i].g, &s_colors[i].b);
+    }
+}
+
 static void fill_solid(uint8_t r, uint8_t g, uint8_t b, uint32_t intensity)
 {
     uint8_t rr = shade(r, intensity), gg = shade(g, intensity), bb = shade(b, intensity);
@@ -190,11 +205,13 @@ static void render_frame(const light_state_t *st, uint32_t now_ms, uint32_t scal
         break;
     case EFFECT_BREATHE: {
         uint32_t phase = (now_ms % BREATHE_PERIOD_MS) * 256 / BREATHE_PERIOD_MS;
+
         fill_solid(st->r, st->g, st->b, (scale * s_breathe[phase]) >> 8);
         break;
     }
     case EFFECT_RAINBOW: {
         uint32_t base = (uint32_t)(((uint64_t)(now_ms % RAINBOW_PERIOD_MS) << 16) / RAINBOW_PERIOD_MS);
+
         for (int i = 0; i < NUM_LEDS; i++) {
             uint16_t hue = (uint16_t)(base + ((uint32_t)i << 16) / NUM_LEDS);
             uint8_t r, g, b;
@@ -203,6 +220,16 @@ static void render_frame(const light_state_t *st, uint32_t now_ms, uint32_t scal
             s_frame[i * 3 + 1] = shade(g, scale);
             s_frame[i * 3 + 2] = shade(b, scale);
         }
+        break;
+    }
+    case EFFECT_BREATHING_PALETTE: {
+        uint32_t phase = (now_ms % BREATHE_PERIOD_MS) * 256 / BREATHE_PERIOD_MS;
+        uint32_t cycle = now_ms / BREATHE_PERIOD_MS;
+        uint32_t color_index = cycle % NUM_RANDOM_COLORS;
+        
+        const rgb_color_t *color = &s_colors[color_index];
+
+        fill_solid(color->r, color->g, color->b, (scale * s_breathe[phase]) >> 8);
         break;
     }
     case EFFECT_SOLID:
